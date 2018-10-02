@@ -1,0 +1,7 @@
+c:\users\inspira\source\repos\RegexAngularMigration\RegexAngularMigration\bin\Debug\RegexAngularMigration.exe.config
+c:\users\inspira\source\repos\RegexAngularMigration\RegexAngularMigration\bin\Debug\RegexAngularMigration.exe
+c:\users\inspira\source\repos\RegexAngularMigration\RegexAngularMigration\bin\Debug\RegexAngularMigration.pdb
+c:\users\inspira\source\repos\RegexAngularMigration\RegexAngularMigration\obj\Debug\RegexAngularMigration.csprojAssemblyReference.cache
+c:\users\inspira\source\repos\RegexAngularMigration\RegexAngularMigration\obj\Debug\RegexAngularMigration.csproj.CoreCompileInputs.cache
+c:\users\inspira\source\repos\RegexAngularMigration\RegexAngularMigration\obj\Debug\RegexAngularMigration.exe
+c:\users\inspira\source\repos\RegexAngularMigration\RegexAngularMigration\obj\Debug\RegexAngularMigration.pdb
