@@ -5,3 +5,10 @@ c:\users\inspira\source\repos\RegexAngularMigration\RegexAngularMigration\obj\De
 c:\users\inspira\source\repos\RegexAngularMigration\RegexAngularMigration\obj\Debug\RegexAngularMigration.csproj.CoreCompileInputs.cache
 c:\users\inspira\source\repos\RegexAngularMigration\RegexAngularMigration\obj\Debug\RegexAngularMigration.exe
 c:\users\inspira\source\repos\RegexAngularMigration\RegexAngularMigration\obj\Debug\RegexAngularMigration.pdb
+E:\Projeto\RegexAngularMigration\RegexAngularMigration\bin\Debug\RegexAngularMigration.exe.config
+E:\Projeto\RegexAngularMigration\RegexAngularMigration\bin\Debug\RegexAngularMigration.exe
+E:\Projeto\RegexAngularMigration\RegexAngularMigration\bin\Debug\RegexAngularMigration.pdb
+E:\Projeto\RegexAngularMigration\RegexAngularMigration\obj\Debug\RegexAngularMigration.csprojAssemblyReference.cache
+E:\Projeto\RegexAngularMigration\RegexAngularMigration\obj\Debug\RegexAngularMigration.csproj.CoreCompileInputs.cache
+E:\Projeto\RegexAngularMigration\RegexAngularMigration\obj\Debug\RegexAngularMigration.exe
+E:\Projeto\RegexAngularMigration\RegexAngularMigration\obj\Debug\RegexAngularMigration.pdb

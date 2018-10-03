@@ -19,19 +19,71 @@ namespace RegexAngularMigration
 		public static  void GetFile()
 		{
 			string contents = File.ReadAllText(@"C:\temp\AdministracaoController.js");
-			Regex rgx = new Regex(@"(\$http[\.\[]['""]?\w+['""]?\]?\([^\)]+\)\s*\.\s*)success\s*\(\s*function\s*\(([^\)]*?)\)\s*(\{.+?\})\s*\)\s*\.\s*error\s*\(\s*function\s*\(([^\)]*?)\)\s*(\{.+?\})\s*\)\s*\;"
-, RegexOptions.Singleline);
+
+			// com grupo 
+			//(\$http[\.\[]['""]?\w+['""]?\]?\([^\)]+\)\s*\.\s*)success\s*\(\s*function\s*\(([^\)]*?)\)\s*(\{.+?\})\s*\)\s*\.\s*error\s*\(\s*function\s*\(([^\)]*?)\)\s*(\{.+?\})\s*\)\s*\;
+			Regex rgx = new Regex(@"\$http[\.\[]['""]?\w+['""]?\]?\([^\)]+\)\s*\.\s*(success\s*\(\s*function\s*\([^\)]*?)\)\s*(\{.+?\})(\s*\)\s*\.\s*error\s*\(\s*function\s*\([^\)]*?)\)\s*(\{.+?\})\s*\)\s*\;", RegexOptions.Singleline);
 
 			var matches = rgx.Matches(contents);
+
 			foreach (Match m in matches) {
-//				Console.WriteLine(m.Value);
+				string valorAntigo = m.Value;
+				string grupoSuccess = string.Empty;
+				string grupoError = string.Empty;
+				string grupoConteudoErro = string.Empty;
+
 				for (int i =0; i < m.Groups.Count; i++)
 				{
+					if(i == 1)
+					{
+						grupoSuccess = m.Groups[i].ToString();
+					}
+					if( i == 3)
+					{
+						grupoError = m.Groups[i].ToString();
+					}
+
+					if(i == 4)
+					{
+						grupoConteudoErro = m.Groups[i].ToString();
+					}
 					Console.WriteLine("{0}: {1}", i, m.Groups[i]);
 				}
-				Console.ReadKey();
+
+				string valorNovo = SubstituiBloco(valorAntigo, "then(function(responseNovo", grupoSuccess);
+				valorNovo = SubstituiBloco(valorNovo, ",function(responseNovo", grupoError);
+
+				valorNovo = SubstituiBloco(valorNovo, TratarCorpoErro(grupoConteudoErro), grupoConteudoErro);
+
+				contents = contents.Replace(valorAntigo, valorNovo);
+
+				//Console.ReadKey();
 				Console.WriteLine("\n=====================================================\n");
 			}
+
+			CriarNovoArquivo(@"C:\temp\", "AdministracaoController2.js", contents);
+		}
+
+		public static string SubstituiBloco(string valorAntigo, string valorNovo, string grupo)
+		{
+			return valorAntigo.Replace(grupo, valorNovo);
+		}
+
+		public static string TratarCorpoErro(string grupoConteudoErro)
+		{
+			grupoConteudoErro = grupoConteudoErro.Replace("{", "");
+			string declaracao = "var data = responseNovo.data; \n " +
+			"var status = responseNovo.status; \n" +
+			"var headers = responseNovo.headers; \n" +
+			"var config = responseNovo.config; \n";
+
+			return $"{{ \n{declaracao} \n {grupoConteudoErro}";
+		}
+
+		public static void CriarNovoArquivo(string caminho, string nomeArquivo, string conteudo)
+		{
+			string path = Path.Combine(caminho, nomeArquivo);
+			File.WriteAllText(path, conteudo);
 		}
 	}
 }
