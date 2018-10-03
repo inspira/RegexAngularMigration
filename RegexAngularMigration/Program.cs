@@ -61,7 +61,7 @@ namespace RegexAngularMigration
 				}
 
 				string valorNovo = SubstituiBloco(valorAntigo, "then(function(responseNovo", grupoSuccess);
-				valorNovo = SubstituiBloco(valorNovo, ",function(responseNovo", grupoError);
+				valorNovo = SubstituiBloco(valorNovo, ",function(responseNovo)", grupoError);
 
 				valorNovo = SubstituiBloco(valorNovo, TratarCorpoErro(grupoConteudoErro, variaveisErro), grupoConteudoErro);
 
