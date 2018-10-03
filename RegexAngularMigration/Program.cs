@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -20,7 +21,8 @@ namespace RegexAngularMigration
 		{
 			string scriptsFolder = @"C:\Portal\portaldeassinaturas\Site\Scripts\app\";
 			string fileNameToRefactor = "AdministracaoController";
-			string contents = File.ReadAllText(scriptsFolder + fileNameToRefactor + ".js" );
+			string filePathToRefactor = scriptsFolder + fileNameToRefactor + ".js";
+			string contents = File.ReadAllText(filePathToRefactor);
 
 			// com grupo 
 			//(\$http[\.\[]['""]?\w+['""]?\]?\([^\)]+\)\s*\.\s*)success\s*\(\s*function\s*\(([^\)]*?)\)\s*(\{.+?\})\s*\)\s*\.\s*error\s*\(\s*function\s*\(([^\)]*?)\)\s*(\{.+?\})\s*\)\s*\;
@@ -68,8 +70,11 @@ namespace RegexAngularMigration
 				//Console.ReadKey();
 				Console.WriteLine("\n=====================================================\n");
 			}
+			string refactorFolder = @"C:\temp\refatorados\";
+			string refactoredFile = fileNameToRefactor + "Refatorado.js";
 
-			CriarNovoArquivo(@"C:\temp\refatorados", fileNameToRefactor + "Refatorado.js", contents);
+			CriarNovoArquivo(refactorFolder, refactoredFile, contents);
+			AbrirBeyondCompare(filePathToRefactor, refactorFolder + refactoredFile);
 		}
 
 		public static string SubstituiBloco(string valorAntigo, string valorNovo, string grupo)
@@ -96,6 +101,12 @@ namespace RegexAngularMigration
 			}
 			string path = Path.Combine(caminho, nomeArquivo);
 			File.WriteAllText(path, conteudo);
+		}
+
+		public static void AbrirBeyondCompare(string arquivoOriginal, string arquivoRefatorado) {
+			string beyondCompareExePath = @"C:\Program Files\Beyond Compare 4\BCompare.exe";
+			var commandArgument = arquivoOriginal + " " + arquivoRefatorado;
+			Process.Start(beyondCompareExePath, commandArgument);
 		}
 	}
 }
