@@ -88,7 +88,7 @@ namespace RegexAngularMigration
 			string declaracao = null;
 			foreach (var item in variaveisErro)
 			{
-				declaracao += $"var {item} = responseNovo.{item}; \n";
+				declaracao += $"var {item} = responseNovo.{item.TrimStart(' ')}; \n";
 			}
 
 			return $"{{ \n{declaracao} \n {grupoConteudoErro}";
