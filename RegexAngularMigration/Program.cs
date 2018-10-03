@@ -18,7 +18,9 @@ namespace RegexAngularMigration
 
 		public static  void GetFile()
 		{
-			string contents = File.ReadAllText(@"C:\temp\AdministracaoController.js");
+			string scriptsFolder = @"C:\Portal\portaldeassinaturas\Site\Scripts\app\";
+			string fileNameToRefactor = "AdministracaoController";
+			string contents = File.ReadAllText(scriptsFolder + fileNameToRefactor + ".js" );
 
 			// com grupo 
 			//(\$http[\.\[]['""]?\w+['""]?\]?\([^\)]+\)\s*\.\s*)success\s*\(\s*function\s*\(([^\)]*?)\)\s*(\{.+?\})\s*\)\s*\.\s*error\s*\(\s*function\s*\(([^\)]*?)\)\s*(\{.+?\})\s*\)\s*\;
@@ -67,7 +69,7 @@ namespace RegexAngularMigration
 				Console.WriteLine("\n=====================================================\n");
 			}
 
-			CriarNovoArquivo(@"C:\temp\", "AdministracaoController2.js", contents);
+			CriarNovoArquivo(@"C:\temp\refatorados", fileNameToRefactor + "Refatorado.js", contents);
 		}
 
 		public static string SubstituiBloco(string valorAntigo, string valorNovo, string grupo)
@@ -89,6 +91,9 @@ namespace RegexAngularMigration
 
 		public static void CriarNovoArquivo(string caminho, string nomeArquivo, string conteudo)
 		{
+			if (!Directory.Exists(caminho)) {
+				Directory.CreateDirectory(caminho);
+			}
 			string path = Path.Combine(caminho, nomeArquivo);
 			File.WriteAllText(path, conteudo);
 		}
