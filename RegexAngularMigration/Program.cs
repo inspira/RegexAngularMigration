@@ -22,7 +22,7 @@ namespace RegexAngularMigration
 
 			// com grupo 
 			//(\$http[\.\[]['""]?\w+['""]?\]?\([^\)]+\)\s*\.\s*)success\s*\(\s*function\s*\(([^\)]*?)\)\s*(\{.+?\})\s*\)\s*\.\s*error\s*\(\s*function\s*\(([^\)]*?)\)\s*(\{.+?\})\s*\)\s*\;
-			Regex rgx = new Regex(@"\$http[\.\[]['""]?\w+['""]?\]?\([^\)]+\)\s*\.\s*(success\s*\(\s*function\s*\([^\)]*?)\)\s*(\{.+?\})(\s*\)\s*\.\s*error\s*\(\s*function\s*\([^\)]*?)\)\s*(\{.+?\})\s*\)\s*\;", RegexOptions.Singleline);
+			Regex rgx = new Regex(@"\$http[\.\[]['""]?\w+['""]?\]?\([^\)]+\)\s*\.\s*(success\s*\(\s*function\s*\([^\)]*?)\)\s*(\{.+?\})(\s*\)\s*\.\s*error\s*\(\s*function\s*\(([^\)]*?)\))\s*(\{.+?\})\s*\)\s*\;", RegexOptions.Singleline);
 
 			var matches = rgx.Matches(contents);
 
@@ -31,6 +31,7 @@ namespace RegexAngularMigration
 				string grupoSuccess = string.Empty;
 				string grupoError = string.Empty;
 				string grupoConteudoErro = string.Empty;
+				string[] variaveisErro = null;
 
 				for (int i =0; i < m.Groups.Count; i++)
 				{
@@ -45,6 +46,11 @@ namespace RegexAngularMigration
 
 					if(i == 4)
 					{
+						variaveisErro = m.Groups[i].ToString().Split(',');
+					}
+
+					if(i == 5)
+					{
 						grupoConteudoErro = m.Groups[i].ToString();
 					}
 					Console.WriteLine("{0}: {1}", i, m.Groups[i]);
@@ -53,7 +59,7 @@ namespace RegexAngularMigration
 				string valorNovo = SubstituiBloco(valorAntigo, "then(function(responseNovo", grupoSuccess);
 				valorNovo = SubstituiBloco(valorNovo, ",function(responseNovo", grupoError);
 
-				valorNovo = SubstituiBloco(valorNovo, TratarCorpoErro(grupoConteudoErro), grupoConteudoErro);
+				valorNovo = SubstituiBloco(valorNovo, TratarCorpoErro(grupoConteudoErro, variaveisErro), grupoConteudoErro);
 
 				contents = contents.Replace(valorAntigo, valorNovo);
 
@@ -69,13 +75,14 @@ namespace RegexAngularMigration
 			return valorAntigo.Replace(grupo, valorNovo);
 		}
 
-		public static string TratarCorpoErro(string grupoConteudoErro)
+		public static string TratarCorpoErro(string grupoConteudoErro, string[] variaveisErro)
 		{
 			grupoConteudoErro = grupoConteudoErro.Replace("{", "");
-			string declaracao = "var data = responseNovo.data; \n " +
-			"var status = responseNovo.status; \n" +
-			"var headers = responseNovo.headers; \n" +
-			"var config = responseNovo.config; \n";
+			string declaracao = null;
+			foreach (var item in variaveisErro)
+			{
+				declaracao += $"var {item} = responseNovo.{item}; \n";
+			}
 
 			return $"{{ \n{declaracao} \n {grupoConteudoErro}";
 		}
