@@ -19,7 +19,7 @@ namespace RegexAngularMigration
 
 		public static  void GetFile()
 		{
-			string scriptsFolder = @"C:\Portal\portaldeassinaturas\Site\Scripts\app\";
+			string scriptsFolder = @"C:\Temp\";
 			string fileNameToRefactor = "AdministracaoController";
 			string filePathToRefactor = scriptsFolder + fileNameToRefactor + ".js";
 			string contents = File.ReadAllText(filePathToRefactor);
@@ -88,7 +88,16 @@ namespace RegexAngularMigration
 			string declaracao = null;
 			foreach (var item in variaveisErro)
 			{
-				declaracao += $"var {item} = responseNovo.{item.TrimStart(' ')}; \n";
+				var index = Array.IndexOf(variaveisErro, item);
+				if(index == 0)
+				{
+					declaracao += $"var {item} = responseNovo.data; \n";
+				}
+				else
+				{
+					declaracao += $"var {item} = responseNovo.{item.TrimStart(' ')}; \n";
+				}
+				
 			}
 
 			return $"{{ \n{declaracao} \n {grupoConteudoErro}";
