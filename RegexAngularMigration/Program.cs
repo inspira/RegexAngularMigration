@@ -71,11 +71,11 @@ namespace RegexAngularMigration
 					Console.WriteLine("{0}: {1}", i, m.Groups[i]);
 				}
 
-				string valorNovo = SubstituiBloco(valorAntigo, "then(function(responseNovo)", grupoSuccess);
+				string valorNovo = TratarMetodosCallback(valorAntigo, "then(function(responseNovo)", grupoSuccess, variaveisSuccess, grupoConteudoSuccess);
+				valorNovo = TratarGrupoConteudo(valorNovo, grupoConteudoSuccess, variaveisSuccess);
 
-				valorNovo = SubstituiBloco(valorNovo, TratarCorpoSuccess(grupoConteudoSuccess, variaveisSuccess), grupoConteudoSuccess);
-				valorNovo = SubstituiBloco(valorNovo, ",function(responseNovo)", grupoError);
-				valorNovo = SubstituiBloco(valorNovo, TratarCorpoErro(grupoConteudoErro, variaveisErro), grupoConteudoErro);
+				valorNovo = TratarMetodosCallback(valorNovo, ", function(responseNovo)", grupoError, variaveisErro, grupoConteudoErro);
+				valorNovo = TratarGrupoConteudo(valorNovo, grupoConteudoErro, variaveisErro);
 
 				contents = contents.Replace(valorAntigo, valorNovo);
 
@@ -94,24 +94,23 @@ namespace RegexAngularMigration
 			return valorAntigo.Replace(grupo, valorNovo);
 		}
 
-		public static string TratarCorpoErro(string grupoConteudoErro, string[] variaveisErro)
+		public static string TratarMetodosCallback(string valorAntigo, string conteudoNovo, string grupoCallback, string[] parametrosFunc, string grupoConteudo)
 		{
-			grupoConteudoErro = grupoConteudoErro.Replace("{", "");
-			var funcParams = new string[] { "data", "status", "headers", "config" };
-			string declaracao = null;
-			for(int i = 0; i < variaveisErro.Length; i++) {
-				declaracao += $"var {variaveisErro[i]} = responseNovo.{funcParams[i]};\n";
+			if (!ValidaParametrosCallback(parametrosFunc, grupoConteudo)) {
+				conteudoNovo = conteudoNovo.Replace("responseNovo", "");
 			}
-
-			return $"{{ \n{declaracao} \n {grupoConteudoErro}";
+			return SubstituiBloco(valorAntigo, conteudoNovo, grupoCallback);
 		}
 
-		public static string TratarCorpoSuccess(string grupoConteudoSuccess, string[] variaveisSuccess) {
+		public static string TratarGrupoConteudo(string valorAntigo, string grupoConteudo, string[] parametrosFunc) {
+
 			var funcParams = new string[] { "data", "status", "headers", "config" };
-			for (int i = 0; i < variaveisSuccess.Length; i++) {
-				grupoConteudoSuccess = grupoConteudoSuccess.Replace(variaveisSuccess[i], $"responseNovo.{funcParams[i]}");
+			string grupoConteudoNovo = grupoConteudo;
+				for (int i = 0; i < parametrosFunc.Length; i++) {
+				if(parametrosFunc[i].Length == 0) { break; }
+				grupoConteudoNovo = grupoConteudoNovo.Replace(parametrosFunc[i], $"responseNovo.{funcParams[i]}");
 			}
-			return grupoConteudoSuccess;
+			return SubstituiBloco(valorAntigo, grupoConteudoNovo, grupoConteudo);
 		}
 
 		public static void CriarNovoArquivo(string caminho, string nomeArquivo, string conteudo)
@@ -127,6 +126,19 @@ namespace RegexAngularMigration
 			string beyondCompareExePath = @"C:\Program Files\Beyond Compare 4\BCompare.exe";
 			var commandArgument = arquivoOriginal + " " + arquivoRefatorado;
 			Process.Start(beyondCompareExePath, commandArgument);
+		}
+
+		public static bool ValidaParametrosCallback (string[] parametros, string grupoConteudo) {
+			if (parametros == null) {
+				return false;
+			}
+			var qtdOcorrenciasdeParamsNoConteudo = 0;
+			foreach (var p in parametros) {
+				if (p.Length != 0 && grupoConteudo.Contains(p)) {
+					qtdOcorrenciasdeParamsNoConteudo++;
+				}
+			}
+			return qtdOcorrenciasdeParamsNoConteudo > 0;
 		}
 	}
 }
