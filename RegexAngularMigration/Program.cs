@@ -27,13 +27,15 @@ namespace RegexAngularMigration
 
 			// com grupo 
 			//(\$http[\.\[]['""]?\w+['""]?\]?\([^\)]+\)\s*\.\s*)success\s*\(\s*function\s*\(([^\)]*?)\)\s*(\{.+?\})\s*\)\s*\.\s*error\s*\(\s*function\s*\(([^\)]*?)\)\s*(\{.+?\})\s*\)\s*\;
-			Regex rgx = new Regex(@"\$http[\.\[]['""]?\w+['""]?\]?\([^\)]+\)\s*\.\s*(success\s*\(\s*function\s*\([^\)]*?)\)\s*(\{.+?\})(\s*\)\s*\.\s*error\s*\(\s*function\s*\(([^\)]*?)\))\s*(\{.+?\})\s*\)\s*\;", RegexOptions.Singleline);
+			Regex rgx = new Regex(@"\$http[\.\[]['""]?\w+['""]?\]?\([^\)]+\)\s*\.\s*(success\s*\(\s*function\s*\(([^\)]*?)\))\s*(\{.+?\})(\s*\)\s*\.\s*error\s*\(\s*function\s*\(([^\)]*?)\))\s*(\{.+?\})\s*\)\s*\;", RegexOptions.Singleline);
 
 			var matches = rgx.Matches(contents);
 
 			foreach (Match m in matches) {
 				string valorAntigo = m.Value;
 				string grupoSuccess = string.Empty;
+				string grupoConteudoSuccess = string.Empty;
+				string[] variaveisSuccess = null;
 				string grupoError = string.Empty;
 				string grupoConteudoErro = string.Empty;
 				string[] variaveisErro = null;
@@ -44,26 +46,35 @@ namespace RegexAngularMigration
 					{
 						grupoSuccess = m.Groups[i].ToString();
 					}
-					if( i == 3)
+					if(i == 2)
+					{
+						variaveisSuccess = m.Groups[i].ToString().Replace(" ", "").Split(',');
+					}
+					if(i == 3)
+					{
+						grupoConteudoSuccess = m.Groups[i].ToString();
+					}
+					if( i == 4)
 					{
 						grupoError = m.Groups[i].ToString();
 					}
 
-					if(i == 4)
+					if(i == 5)
 					{
-						variaveisErro = m.Groups[i].ToString().Split(',');
+						variaveisErro = m.Groups[i].ToString().Replace(" ", "").Split(',');
 					}
 
-					if(i == 5)
+					if(i == 6)
 					{
 						grupoConteudoErro = m.Groups[i].ToString();
 					}
 					Console.WriteLine("{0}: {1}", i, m.Groups[i]);
 				}
 
-				string valorNovo = SubstituiBloco(valorAntigo, "then(function(responseNovo", grupoSuccess);
-				valorNovo = SubstituiBloco(valorNovo, ",function(responseNovo)", grupoError);
+				string valorNovo = SubstituiBloco(valorAntigo, "then(function(responseNovo)", grupoSuccess);
 
+				valorNovo = SubstituiBloco(valorNovo, TratarCorpoSuccess(grupoConteudoSuccess, variaveisSuccess), grupoConteudoSuccess);
+				valorNovo = SubstituiBloco(valorNovo, ",function(responseNovo)", grupoError);
 				valorNovo = SubstituiBloco(valorNovo, TratarCorpoErro(grupoConteudoErro, variaveisErro), grupoConteudoErro);
 
 				contents = contents.Replace(valorAntigo, valorNovo);
@@ -86,22 +97,21 @@ namespace RegexAngularMigration
 		public static string TratarCorpoErro(string grupoConteudoErro, string[] variaveisErro)
 		{
 			grupoConteudoErro = grupoConteudoErro.Replace("{", "");
+			var funcParams = new string[] { "data", "status", "headers", "config" };
 			string declaracao = null;
-			foreach (var item in variaveisErro)
-			{
-				var index = Array.IndexOf(variaveisErro, item);
-				if(index == 0)
-				{
-					declaracao += $"var {item} = responseNovo.data; \n";
-				}
-				else
-				{
-					declaracao += $"var {item} = responseNovo.{item.TrimStart(' ')}; \n";
-				}
-				
+			for(int i = 0; i < variaveisErro.Length; i++) {
+				declaracao += $"var {variaveisErro[i]} = responseNovo.{funcParams[i]};\n";
 			}
 
 			return $"{{ \n{declaracao} \n {grupoConteudoErro}";
+		}
+
+		public static string TratarCorpoSuccess(string grupoConteudoSuccess, string[] variaveisSuccess) {
+			var funcParams = new string[] { "data", "status", "headers", "config" };
+			for (int i = 0; i < variaveisSuccess.Length; i++) {
+				grupoConteudoSuccess = grupoConteudoSuccess.Replace(variaveisSuccess[i], $"responseNovo.{funcParams[i]}");
+			}
+			return grupoConteudoSuccess;
 		}
 
 		public static void CriarNovoArquivo(string caminho, string nomeArquivo, string conteudo)
