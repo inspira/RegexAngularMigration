@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Configuration;
 
 namespace RegexAngularMigration
 {
@@ -19,8 +20,8 @@ namespace RegexAngularMigration
 
 		public static  void GetFile()
 		{
-			string scriptsFolder = @"C:\Temp\";
-			string fileNameToRefactor = "AdministracaoController";
+			string scriptsFolder = ConfigurationSettings.AppSettings.Get("ScriptsFolder");
+			string fileNameToRefactor = ConfigurationSettings.AppSettings.Get("FileNameToRefactor");
 			string filePathToRefactor = scriptsFolder + fileNameToRefactor + ".js";
 			string contents = File.ReadAllText(filePathToRefactor);
 
@@ -70,7 +71,7 @@ namespace RegexAngularMigration
 				//Console.ReadKey();
 				Console.WriteLine("\n=====================================================\n");
 			}
-			string refactorFolder = @"C:\temp\refatorados\";
+			string refactorFolder = ConfigurationSettings.AppSettings.Get("RefactorFolder");
 			string refactoredFile = fileNameToRefactor + "Refatorado.js";
 
 			CriarNovoArquivo(refactorFolder, refactoredFile, contents);
