@@ -123,7 +123,7 @@ namespace RegexAngularMigration
 		}
 
 		public static void AbrirBeyondCompare(string arquivoOriginal, string arquivoRefatorado) {
-			string beyondCompareExePath = @"C:\Program Files\Beyond Compare 4\BCompare.exe";
+			string beyondCompareExePath = ConfigurationSettings.AppSettings.Get("BeyondCompareExe");
 			var commandArgument = arquivoOriginal + " " + arquivoRefatorado;
 			Process.Start(beyondCompareExePath, commandArgument);
 		}
