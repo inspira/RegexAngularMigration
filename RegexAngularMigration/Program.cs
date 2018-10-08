@@ -20,8 +20,8 @@ namespace RegexAngularMigration
 
 		public static  void GetFile()
 		{
-			string scriptsFolder = ConfigurationSettings.AppSettings.Get("ScriptsFolder");
-			string fileNameToRefactor = ConfigurationSettings.AppSettings.Get("FileNameToRefactor");
+			string scriptsFolder = ConfigurationManager.AppSettings["ScriptsFolder"];
+			string fileNameToRefactor = ConfigurationManager.AppSettings["FileNameToRefactor"];
 			string filePathToRefactor = scriptsFolder + fileNameToRefactor + ".js";
 			string contents = File.ReadAllText(filePathToRefactor);
 
@@ -82,7 +82,7 @@ namespace RegexAngularMigration
 				//Console.ReadKey();
 				Console.WriteLine("\n=====================================================\n");
 			}
-			string refactorFolder = ConfigurationSettings.AppSettings.Get("RefactorFolder");
+			string refactorFolder = ConfigurationManager.AppSettings["RefactorFolder"];
 			string refactoredFile = fileNameToRefactor + "Refatorado.js";
 
 			CriarNovoArquivo(refactorFolder, refactoredFile, contents);
@@ -104,7 +104,7 @@ namespace RegexAngularMigration
 
 		public static string TratarGrupoConteudo(string valorAntigo, string grupoConteudo, string[] parametrosFunc) {
 
-			var funcParams = new string[] { "data", "status", "headers", "config" };
+			var funcParams = new string[] { "data", "status", "headers", "config", "statusText", "xhrStatus" };
 			string grupoConteudoNovo = grupoConteudo;
 				for (int i = 0; i < parametrosFunc.Length; i++) {
 				if(parametrosFunc[i].Length == 0) { break; }
@@ -123,7 +123,7 @@ namespace RegexAngularMigration
 		}
 
 		public static void AbrirBeyondCompare(string arquivoOriginal, string arquivoRefatorado) {
-			string beyondCompareExePath = ConfigurationSettings.AppSettings.Get("BeyondCompareExe");
+			string beyondCompareExePath = ConfigurationManager.AppSettings["BeyondCompareExe"];
 			var commandArgument = arquivoOriginal + " " + arquivoRefatorado;
 			Process.Start(beyondCompareExePath, commandArgument);
 		}
