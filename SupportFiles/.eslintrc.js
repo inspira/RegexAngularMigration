@@ -11,5 +11,6 @@ module.exports = {
     },
     "rules": {
 		"angular/no-http-callback": 2
+		"angular/no-services": [2,["uploadFactory","buscaContraparteFactory"]]
     }
 };
