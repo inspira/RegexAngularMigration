@@ -31,8 +31,8 @@ namespace RegexAngularMigration
 
 			var matches = rgx.Matches(contents);
 
-			foreach (Match m in matches) {
-				string valorAntigo = m.Value;
+			foreach (Match match in matches) {
+				string valorAntigo = match.Value;
 				string grupoSuccess = string.Empty;
 				string grupoConteudoSuccess = string.Empty;
 				string[] variaveisSuccess = null;
@@ -40,35 +40,33 @@ namespace RegexAngularMigration
 				string grupoConteudoErro = string.Empty;
 				string[] variaveisErro = null;
 
-				for (int i =0; i < m.Groups.Count; i++)
+				for (int i =0; i < match.Groups.Count; i++)
 				{
 					if(i == 1)
 					{
-						grupoSuccess = m.Groups[i].ToString();
+						grupoSuccess = match.Groups[i].ToString();
 					}
-					if(i == 2)
+					else if(i == 2)
 					{
-						variaveisSuccess = m.Groups[i].ToString().Replace(" ", "").Split(',');
+						variaveisSuccess = match.Groups[i].ToString().Replace(" ", "").Split(',');
 					}
-					if(i == 3)
+					else if(i == 3)
 					{
-						grupoConteudoSuccess = m.Groups[i].ToString();
+						grupoConteudoSuccess = match.Groups[i].ToString();
 					}
-					if( i == 4)
+					else if( i == 4)
 					{
-						grupoError = m.Groups[i].ToString();
+						grupoError = match.Groups[i].ToString();
 					}
-
-					if(i == 5)
+					else if(i == 5)
 					{
-						variaveisErro = m.Groups[i].ToString().Replace(" ", "").Split(',');
+						variaveisErro = match.Groups[i].ToString().Replace(" ", "").Split(',');
 					}
-
-					if(i == 6)
+					else if(i == 6)
 					{
-						grupoConteudoErro = m.Groups[i].ToString();
+						grupoConteudoErro = match.Groups[i].ToString();
 					}
-					Console.WriteLine("{0}: {1}", i, m.Groups[i]);
+					Console.WriteLine("{0}: {1}", i, match.Groups[i]);
 				}
 
 				string valorNovo = TratarMetodosCallback(valorAntigo, "then(function(responseNovo)", grupoSuccess, variaveisSuccess, grupoConteudoSuccess);
@@ -102,15 +100,26 @@ namespace RegexAngularMigration
 			return SubstituiBloco(valorAntigo, conteudoNovo, grupoCallback);
 		}
 
-		public static string TratarGrupoConteudo(string valorAntigo, string grupoConteudo, string[] parametrosFunc) {
+		public static string TratarGrupoConteudo(string valorAntigo, string grupoConteudo, string[] parametrosExistentes) {
 
-			var funcParams = new string[] { "data", "status", "headers", "config", "statusText", "xhrStatus" };
-			string grupoConteudoNovo = grupoConteudo;
-				for (int i = 0; i < parametrosFunc.Length; i++) {
-				if(parametrosFunc[i].Length == 0) { break; }
-				grupoConteudoNovo = Regex.Replace(grupoConteudoNovo, $@"\b{parametrosFunc[i]}\b", $"responseNovo.{funcParams[i]}");
-			}
+			var grupoConteudoNovo = SubstituiParametrosAntigosPorNovos(parametrosExistentes, grupoConteudo);
+
 			return SubstituiBloco(valorAntigo, grupoConteudoNovo, grupoConteudo);
+		}
+
+		private static string SubstituiParametrosAntigosPorNovos(string[] parametrosExistentes, string grupoConteudoNovo) {
+			var defaultParams = new string[] { "data", "status", "headers", "config", "statusText", "xhrStatus" };
+
+			for (int i = 0; i < parametrosExistentes.Length; i++) {
+				if (parametrosExistentes[i].Length == 0) { break; }
+				grupoConteudoNovo = SubstituiParametroAntigoPorNovo(parametrosExistentes[i], defaultParams[i], grupoConteudoNovo);
+			}
+
+			return grupoConteudoNovo;
+		}
+
+		private static string SubstituiParametroAntigoPorNovo(string parametroFunc, string defaultParam, string grupoConteudoNovo) {
+			return Regex.Replace(grupoConteudoNovo, $@"\b{parametroFunc}\b", $"responseNovo.{defaultParam}");
 		}
 
 		public static void CriarNovoArquivo(string caminho, string nomeArquivo, string conteudo)
