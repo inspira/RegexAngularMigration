@@ -108,7 +108,7 @@ namespace RegexAngularMigration
 			string grupoConteudoNovo = grupoConteudo;
 				for (int i = 0; i < parametrosFunc.Length; i++) {
 				if(parametrosFunc[i].Length == 0) { break; }
-				grupoConteudoNovo = grupoConteudoNovo.Replace(parametrosFunc[i], $"responseNovo.{funcParams[i]}");
+				grupoConteudoNovo = Regex.Replace(grupoConteudoNovo, $@"\b{parametrosFunc[i]}\b", $"responseNovo.{funcParams[i]}");
 			}
 			return SubstituiBloco(valorAntigo, grupoConteudoNovo, grupoConteudo);
 		}
