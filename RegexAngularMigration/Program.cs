@@ -1,15 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Configuration;
 
-namespace RegexAngularMigration
-{
+namespace RegexAngularMigration {
 	class Program
 	{
 		static void Main(string[] args)
@@ -27,7 +22,8 @@ namespace RegexAngularMigration
 
 			// com grupo 
 			//(\$http[\.\[]['""]?\w+['""]?\]?\([^\)]+\)\s*\.\s*)success\s*\(\s*function\s*\(([^\)]*?)\)\s*(\{.+?\})\s*\)\s*\.\s*error\s*\(\s*function\s*\(([^\)]*?)\)\s*(\{.+?\})\s*\)\s*\;
-			Regex rgx = new Regex(@"\$http[\.\[]['""]?\w+['""]?\]?\([^\)]+\)\s*\.\s*(success\s*\(\s*function\s*\(([^\)]*?)\))\s*(\{.+?\})(\s*\)\s*\.\s*error\s*\(\s*function\s*\(([^\)]*?)\))\s*(\{.+?\})\s*\)\s*\;", RegexOptions.Singleline);
+			//Regex rgx = new Regex(@"\$http[\.\[]['""]?\w+['""]?\]?\([^\)]+\)\s*\.\s*(success\s*\(\s*function\s*\(([^\)]*?)\))\s*(\{.+?\})(\s*\)\s*\.\s*error\s*\(\s*function\s*\(([^\)]*?)\))\s*(\{.+?\})\s*\)\s*\;", RegexOptions.Singleline);
+			Regex rgx = new Regex(@"\$http[\.\[]['""]?\w+['""]?\]?\([^\n]+\)\s*\.\s*(success\s*\(\s*function\s*\(([^\)]*?)\))\s*(\{.+?\})(\s*\)\s*\.\s*error\s*\(\s*function\s*\(([^\)]*?)\))\s*(\{.+?\})\s*\)\s*\;", RegexOptions.Singleline);
 
 			var matches = rgx.Matches(contents);
 
@@ -69,10 +65,10 @@ namespace RegexAngularMigration
 					Console.WriteLine("{0}: {1}", i, match.Groups[i]);
 				}
 
-				string valorNovo = TratarMetodosCallback(valorAntigo, "then(function(responseNovo)", grupoSuccess, variaveisSuccess, grupoConteudoSuccess);
+				string valorNovo = TratarMetodosCallback(valorAntigo, "then(function onSuccess(responseNovo)", grupoSuccess, variaveisSuccess, grupoConteudoSuccess);
 				valorNovo = TratarGrupoConteudo(valorNovo, grupoConteudoSuccess, variaveisSuccess);
 
-				valorNovo = TratarMetodosCallback(valorNovo, ", function(responseNovo)", grupoError, variaveisErro, grupoConteudoErro);
+				valorNovo = TratarMetodosCallback(valorNovo, ", function onError(responseNovo)", grupoError, variaveisErro, grupoConteudoErro);
 				valorNovo = TratarGrupoConteudo(valorNovo, grupoConteudoErro, variaveisErro);
 
 				contents = contents.Replace(valorAntigo, valorNovo);
