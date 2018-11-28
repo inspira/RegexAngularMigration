@@ -129,8 +129,10 @@ namespace RegexAngularMigration {
 
 		public static void AbrirBeyondCompare(string arquivoOriginal, string arquivoRefatorado) {
 			string beyondCompareExePath = ConfigurationManager.AppSettings["BeyondCompareExe"];
-			var commandArgument = arquivoOriginal + " " + arquivoRefatorado;
-			Process.Start(beyondCompareExePath, commandArgument);
+			if (!String.IsNullOrEmpty(beyondCompareExePath)) {
+				var commandArgument = arquivoOriginal + " " + arquivoRefatorado;
+				Process.Start(beyondCompareExePath, commandArgument);
+			}
 		}
 
 		public static bool ValidaParametrosCallback (string[] parametros, string grupoConteudo) {
